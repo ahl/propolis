@@ -9,9 +9,13 @@ extern crate viona_api;
 extern crate bitflags;
 extern crate byteorder;
 
+use usdt::dtrace_provider;
+dtrace_provider!("usdt.d", format = "probe_{probe}");
+
+pub use usdt;
+
 pub mod block;
 pub mod chardev;
-#[macro_use]
 pub mod common;
 pub mod dispatch;
 pub mod exits;
@@ -30,8 +34,6 @@ use dispatch::*;
 use exits::*;
 use vcpu::VcpuHdl;
 
-pub extern crate usdt;
-
 pub fn vcpu_run_loop(mut vcpu: VcpuHdl, ctx: &mut DispCtx) {
     let mut next_entry = VmEntry::Run;
 
@@ -41,7 +43,6 @@ pub fn vcpu_run_loop(mut vcpu: VcpuHdl, ctx: &mut DispCtx) {
             100,
             1
         ));
-
 
     loop {
         if ctx.check_yield() {
