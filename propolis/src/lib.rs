@@ -1,3 +1,6 @@
+// required for usdt
+#![feature(asm)]
+
 pub extern crate bhyve_api;
 extern crate dladm;
 extern crate viona_api;
@@ -8,6 +11,7 @@ extern crate byteorder;
 
 pub mod block;
 pub mod chardev;
+#[macro_use]
 pub mod common;
 pub mod dispatch;
 pub mod exits;
@@ -26,8 +30,19 @@ use dispatch::*;
 use exits::*;
 use vcpu::VcpuHdl;
 
+pub extern crate usdt;
+
 pub fn vcpu_run_loop(mut vcpu: VcpuHdl, ctx: &mut DispCtx) {
     let mut next_entry = VmEntry::Run;
+
+        probe_pio_read!(|| (
+            1000,
+            2,
+            100,
+            1
+        ));
+
+
     loop {
         if ctx.check_yield() {
             break;

@@ -3,6 +3,13 @@ use std::ops::{Bound::*, RangeBounds};
 use std::ptr::{copy_nonoverlapping, write_bytes};
 use std::slice::SliceIndex;
 
+use usdt::dtrace_provider;
+
+dtrace_provider!(
+    "usdt.d",
+    format = "probe_{probe}"
+);
+
 fn numeric_bounds(
     bound: impl RangeBounds<usize>,
     len: usize,

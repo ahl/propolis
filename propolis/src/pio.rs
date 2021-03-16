@@ -70,7 +70,19 @@ impl PioBus {
             println!("unhandled IO in - port:{:x} len:{}", port, bytes);
         }
 
-        LE::read_u32(&buf)
+        let val = LE::read_u32(&buf);
+
+        probe_pio_read!(|| (
+            port,
+            bytes,
+            val,
+            match handled {
+                true => 1,
+                false => 0,
+            }
+        ));
+
+        val
     }
 
     fn do_pio<F>(&self, port: u16, f: F) -> bool
